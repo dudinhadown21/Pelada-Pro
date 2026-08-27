@@ -1,0 +1,34 @@
+PELADA PRO — V5 FINAL
+========================
+Arquivos:
+- index.html: aplicativo completo
+- manifest.webmanifest: instalação como PWA
+- sw.js: funcionamento offline/cache
+- icon-192.png e icon-512.png: ícones
+
+Recursos:
+- relógio e duração da partida
+- rodízio automático a cada intervalo configurado (padrão 15 min)
+- seleção dos próximos 11 pelo menor tempo jogado
+- controle de entrou/saiu e tempo individual
+- placar
+- registro de gols por jogador
+- registro opcional de assistência
+- artilharia, assistências e participações em gols
+- histórico de gols e ações
+- sorteio de 11 x 11
+- nomes dos 22 jogadores
+- desfazer última ação
+- nova partida
+- salvamento local no celular
+- PWA para adicionar à tela inicial
+
+NO GITHUB:
+Suba/substitua estes arquivos na raiz do repositório:
+index.html
+manifest.webmanifest
+sw.js
+icon-192.png
+icon-512.png
+
+Depois abra o GitHub Pages e toque em "Visit site". Se o navegador mostrar "Adicionar à tela inicial/Instalar app", pode instalar.

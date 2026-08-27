@@ -1,0 +1,319 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#111827">
+<meta name="description" content="Pelada Pro — rodízio, tempo de jogo, placar, artilharia e assistências">
+<link rel="manifest" href="manifest.webmanifest">
+<title>Pelada Pro — Controle</title>
+<style>
+:root{--bg:#0b0d10;--card:#181b20;--card2:#24272d;--text:#f7f7f7;--muted:#aeb4bf;--green:#13a66b;--red:#c63d43;--blue:#2878d2;--purple:#7b4bd1;--orange:#e38b28;--gold:#d9a62e;--line:#30343b}
+*{box-sizing:border-box}body{margin:0;background:linear-gradient(180deg,#08090b,#111317);color:var(--text);font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif}
+.wrap{max-width:900px;margin:auto;padding:12px}.top{position:sticky;top:0;z-index:20;background:rgba(10,12,15,.96);backdrop-filter:blur(10px);padding:10px 0 8px;border-bottom:1px solid var(--line)}
+h1{margin:0;text-align:center;font-size:27px}.sub{text-align:center;color:var(--muted);font-size:13px;margin:2px 0 8px}
+.card{background:var(--card);border:1px solid #20242a;border-radius:20px;padding:16px;margin:12px 0;box-shadow:0 8px 24px #0003}
+h2{margin:0 0 12px;font-size:21px}.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}.grid3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px}
+button,input,select{font:inherit}button{border:0;border-radius:12px;padding:12px 14px;font-weight:800;color:white;cursor:pointer;background:#353943}button:active{transform:scale(.98)}button:disabled{opacity:.45}
+.green{background:var(--green)}.red{background:var(--red)}.blue{background:var(--blue)}.purple{background:var(--purple)}.orange{background:var(--orange)}.dark{background:#30333b}.gold{background:#80651a}
+.timer{text-align:center;font-size:52px;font-weight:900;letter-spacing:2px;line-height:1.05;margin:5px 0}.status{text-align:center;color:var(--muted);margin-bottom:10px}
+.next{text-align:center;background:#30234c;border:1px solid #6d46aa;padding:11px;border-radius:13px;margin:10px 0}
+.score{display:flex;align-items:center;justify-content:center;gap:14px;font-size:30px;font-weight:900}.score button{padding:7px 12px}
+.statgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:9px}.stat{background:var(--card2);border-radius:15px;padding:12px;text-align:center}.stat b{display:block;font-size:27px}.stat span{color:var(--muted);font-size:12px}
+.player{background:var(--card2);border-radius:16px;padding:12px;margin:9px 0;border:1px solid transparent}.player.field{border-color:#13875d}.phead{display:flex;align-items:center;justify-content:space-between;gap:8px}.pname{font-size:19px;font-weight:850}.badge{padding:6px 9px;border-radius:99px;background:#50545b;color:white;font-size:12px;white-space:nowrap}.badge.in{background:#126d4d}
+.pmeta{color:#c7cad0;font-size:14px;margin:5px 0 9px}.playerBtns{display:grid;grid-template-columns:1fr 1fr;gap:8px}.mini{padding:10px;font-size:14px}
+input[type=text],input[type=number],select{width:100%;padding:11px;border-radius:10px;border:1px solid #424750;background:#111318;color:white}
+.names{display:grid;grid-template-columns:1fr 1fr;gap:8px}.nameRow{display:flex;gap:6px}.nameRow input{min-width:0}
+.teamgrid{display:grid;grid-template-columns:1fr 1fr;gap:10px}.team{background:var(--card2);padding:12px;border-radius:15px}.team h3{margin:0 0 7px}.team ol{margin:0;padding-left:23px;color:#e6e8eb}
+.log{max-height:330px;overflow:auto}.logitem{padding:9px 0;border-bottom:1px solid var(--line);color:#d7d9de;font-size:14px}.empty{text-align:center;color:var(--muted);padding:15px}
+.rank{display:grid;grid-template-columns:1fr 1fr;gap:10px}.rankbox{background:var(--card2);border-radius:15px;padding:12px}.rankbox h3{margin:0 0 8px}.rankrow{display:flex;justify-content:space-between;padding:7px 0;border-bottom:1px solid var(--line)}.rankrow:last-child{border-bottom:0}
+.goalbox{background:#12151a;border:1px solid var(--line);border-radius:15px;padding:12px;margin-top:10px}.goalgrid{display:grid;grid-template-columns:1fr 1fr;gap:8px}.goalhistory{max-height:230px;overflow:auto}
+.toast{position:fixed;left:50%;bottom:18px;transform:translateX(-50%);background:#fff;color:#111;padding:12px 16px;border-radius:13px;font-weight:800;z-index:50;display:none;max-width:92%;text-align:center}
+.small{font-size:12px;color:var(--muted)}.okText{color:#5ee0ae}.warn{color:#ffd66b}
+.modal{position:fixed;inset:0;background:#0009;display:none;align-items:flex-end;justify-content:center;z-index:40;padding:10px}.modal.show{display:flex}.sheet{width:min(700px,100%);background:var(--card);border:1px solid var(--line);border-radius:22px;padding:16px;max-height:90vh;overflow:auto}.sheet h2{margin-bottom:8px}
+.kpi{font-size:13px;color:var(--muted);text-align:center;margin-top:8px}
+@media(max-width:600px){.wrap{padding:10px}.grid3{grid-template-columns:1fr 1fr}.timer{font-size:44px}.names{grid-template-columns:1fr}.rank{grid-template-columns:1fr}.pname{font-size:18px}}
+</style>
+</head>
+<body>
+<div class="top"><div class="wrap"><h1>⚽ PELADA PRO</h1><div class="sub">Rodízio inteligente • 15 min • gols • assistências • estatísticas</div></div></div>
+<main class="wrap">
+
+<section class="card">
+  <h2>⏱️ PARTIDA</h2>
+  <div id="timer" class="timer">00:00</div>
+  <div id="matchStatus" class="status">Partida parada</div>
+  <div class="grid3">
+    <button id="startBtn" class="green" onclick="toggleMatch()">▶ Iniciar</button>
+    <button class="dark" onclick="resetMatch()">↻ Reiniciar</button>
+    <button class="red" onclick="finishMatch()">■ Encerrar</button>
+  </div>
+  <div class="grid3" style="margin-top:9px">
+    <label class="small">Duração (min)<input id="duration" type="number" min="1" value="60" onchange="saveSettings()"></label>
+    <label class="small">Troca a cada (min)<input id="interval" type="number" min="1" value="15" onchange="saveSettings()"></label>
+    <div class="stat"><span>PRÓXIMA TROCA</span><b id="nextSwap">15:00</b></div>
+  </div>
+  <div id="nextBox" class="next">⏳ O sistema prepara a próxima troca automaticamente pelo menor tempo jogado.</div>
+</section>
+
+<section class="card">
+  <h2>⚽ PLACAR</h2>
+  <div class="score">
+    <button class="blue" onclick="changeScore(0,-1)">−</button><span id="scoreA">0</span>
+    <span style="color:#777">×</span>
+    <span id="scoreB">0</span><button class="blue" onclick="changeScore(1,1)">+</button>
+  </div>
+  <div class="goalbox">
+    <div class="goalgrid">
+      <button class="green" onclick="openGoal(0)">⚽ Registrar gol — Time A</button>
+      <button class="red" onclick="openGoal(1)">⚽ Registrar gol — Time B</button>
+    </div>
+    <div class="kpi">Ao registrar o gol, você escolhe o artilheiro e, se houver, o assistente.</div>
+  </div>
+</section>
+
+<section class="card">
+  <h2>🏆 ARTILHARIA E ASSISTÊNCIAS</h2>
+  <div class="statgrid">
+    <div class="stat"><span>GOLS</span><b id="totalGoals">0</b></div>
+    <div class="stat"><span>ASSISTÊNCIAS</span><b id="totalAssists">0</b></div>
+    <div class="stat"><span>PARTICIPAÇÕES</span><b id="totalContrib">0</b></div>
+  </div>
+  <div class="rank" style="margin-top:10px">
+    <div class="rankbox"><h3>🥇 Artilharia</h3><div id="scorers"></div></div>
+    <div class="rankbox"><h3>🎯 Assistências</h3><div id="assisters"></div></div>
+  </div>
+  <div class="rankbox" style="margin-top:10px"><h3>⭐ Participações em gols</h3><div id="contributors"></div></div>
+  <div class="goalhistory" id="goalHistory" style="margin-top:10px"></div>
+</section>
+
+<section class="card">
+  <h2>🔄 RODÍZIO</h2>
+  <div class="statgrid">
+    <div class="stat"><span>EM CAMPO</span><b id="inCount">0/11</b></div>
+    <div class="stat"><span>FORA</span><b id="outCount">22/11</b></div>
+    <div class="stat"><span>INTERVALO</span><b id="intervalLabel">15 min</b></div>
+  </div>
+  <div class="grid" style="margin-top:10px">
+    <button class="blue" onclick="putBest11()">⚽ Colocar 11 em campo</button>
+    <button class="purple" onclick="prepareSwap(true)">⚖️ Ver próxima troca</button>
+  </div>
+  <div id="swapPanel" class="next" style="display:none">
+    <div id="swapText"></div>
+    <div class="grid" style="margin-top:9px"><button class="purple" onclick="applyPreparedSwap()">🔄 Aplicar troca</button><button onclick="prepareSwap(true)">🔁 Recalcular</button></div>
+  </div>
+</section>
+
+<section class="card">
+  <h2>🎲 MONTAR TIMES</h2>
+  <div class="grid">
+    <button class="blue" onclick="drawTeams()">⚖️ Sortear 11 × 11</button>
+    <button onclick="clearTeams()">Limpar times</button>
+  </div>
+  <p class="small">O sorteio usa os 22 jogadores cadastrados e mostra os dois times completos.</p>
+  <div id="teams" class="teamgrid"></div>
+</section>
+
+<section class="card">
+  <h2>👥 JOGADORES</h2>
+  <p class="small">Use ENTROU e SAIU para registrar o rodízio. O tempo é calculado automaticamente. O sistema prioriza quem jogou menos.</p>
+  <div id="players"></div>
+</section>
+
+<section class="card">
+  <h2>📝 NOMES DOS JOGADORES</h2>
+  <div id="names" class="names"></div>
+  <div class="grid" style="margin-top:10px"><button class="green" onclick="saveNames()">💾 Salvar nomes</button><button onclick="resetNames()">↺ Nomes padrão</button></div>
+</section>
+
+<section class="card">
+  <h2>📋 HISTÓRICO</h2>
+  <div id="history" class="log"></div>
+  <div class="grid" style="margin-top:10px"><button onclick="undo()">↩ Desfazer última ação</button><button class="red" onclick="newGame()">🔁 Nova partida</button></div>
+</section>
+
+</main>
+
+<div id="goalModal" class="modal" onclick="if(event.target.id==='goalModal')closeGoal()">
+  <div class="sheet">
+    <h2 id="goalTitle">⚽ Registrar gol</h2>
+    <label class="small">Quem fez o gol?<select id="goalScorer"></select></label>
+    <label class="small" style="display:block;margin-top:9px">Quem deu a assistência? (opcional)<select id="goalAssist"></select></label>
+    <div class="grid" style="margin-top:12px"><button class="dark" onclick="closeGoal()">Cancelar</button><button class="green" onclick="saveGoal()">✓ Confirmar gol</button></div>
+  </div>
+</div>
+
+<div id="toast" class="toast"></div>
+
+<script>
+const DEFAULT_NAMES=["João Vitor","JV","Jogador 3","Jogador 4","Jogador 5","Jogador 6","Jogador 7","Jogador 8","Jogador 9","Jogador 10","Jogador 11","Jogador 12","Jogador 13","Jogador 14","Jogador 15","Jogador 16","Nicolas Furtado","Ruan","Eric","Giovanny","Jogador 21","Jogador 22"];
+const KEY="pelada_pro_final_v5";
+let state={names:[...DEFAULT_NAMES],players:[],elapsed:0,running:false,runStartedAt:null,duration:60,interval:15,score:[0,0],history:[],undo:[],prepared:[],lastSwap:0,teams:null,goals:[]};
+let tick=null, pendingTeam=null;
+
+function load(){
+  try{const s=JSON.parse(localStorage.getItem(KEY));if(s) state={...state,...s}}catch(e){}
+  state.names=(Array.isArray(state.names)&&state.names.length===22)?state.names:DEFAULT_NAMES.slice();
+  if(!Array.isArray(state.players)||state.players.length!==22) state.players=state.names.map((name,i)=>({id:i,name,field:false,total:0,entered:0,left:0,lastIn:null,goals:0,assists:0}));
+  state.players.forEach((p,i)=>{p.id=i;p.name=state.names[i];p.field=!!p.field;p.total=Number(p.total)||0;p.entered=Number(p.entered)||0;p.left=Number(p.left)||0;p.lastIn=p.lastIn||null;p.goals=Number(p.goals)||0;p.assists=Number(p.assists)||0});
+  state.goals=Array.isArray(state.goals)?state.goals:[];
+  state.score=Array.isArray(state.score)?state.score:[0,0];
+  document.getElementById("duration").value=state.duration||60;
+  document.getElementById("interval").value=state.interval||15;
+  if(state.running && !state.runStartedAt) state.runStartedAt=Date.now();
+  render(); updateClock();
+  if(state.running) startTick();
+}
+function save(){localStorage.setItem(KEY,JSON.stringify(state))}
+function snapshot(){return JSON.stringify({players:state.players,elapsed:getElapsed(),running:state.running,runStartedAt:state.runStartedAt,score:state.score,history:state.history,prepared:state.prepared,lastSwap:state.lastSwap,teams:state.teams,goals:state.goals})}
+function pushUndo(){state.undo=state.undo||[];state.undo.push(snapshot());if(state.undo.length>40)state.undo.shift()}
+function restoreSnap(raw){Object.assign(state,JSON.parse(raw));state.undo=state.undo||[];save();render();if(state.running)startTick();else stopTick()}
+function toast(t){const e=document.getElementById("toast");e.textContent=t;e.style.display="block";clearTimeout(toast.t);toast.t=setTimeout(()=>e.style.display="none",2300)}
+function fmt(sec){sec=Math.max(0,Math.floor(sec));let m=Math.floor(sec/60),s=sec%60;return String(m).padStart(2,"0")+":"+String(s).padStart(2,"0")}
+function getElapsed(){return state.elapsed+(state.running&&state.runStartedAt?Math.max(0,(Date.now()-state.runStartedAt)/1000):0)}
+function effectiveTotal(p){return p.total+(p.field&&p.lastIn?Math.max(0,(Date.now()-p.lastIn)/1000):0)}
+function freezeClock(){if(state.running&&state.runStartedAt){state.elapsed+=Math.max(0,(Date.now()-state.runStartedAt)/1000);state.runStartedAt=null}}
+function freezeFieldTimes(){const now=Date.now();state.players.forEach(p=>{if(p.field&&p.lastIn){p.total+=Math.max(0,(now-p.lastIn)/1000);p.lastIn=state.running?now:null}})}
+function addHistory(text){state.history.unshift(new Date().toLocaleTimeString("pt-BR",{hour:"2-digit",minute:"2-digit"})+" — "+text);state.history=state.history.slice(0,150)}
+function render(){
+  const elapsed=getElapsed();
+  document.getElementById("timer").textContent=fmt(elapsed);
+  document.getElementById("scoreA").textContent=state.score[0];document.getElementById("scoreB").textContent=state.score[1];
+  const field=state.players.filter(p=>p.field).length;
+  document.getElementById("inCount").textContent=field+"/11";document.getElementById("outCount").textContent=(22-field)+"/11";
+  document.getElementById("intervalLabel").textContent=(state.interval||15)+" min";
+  document.getElementById("matchStatus").textContent=state.running?"Partida em andamento":"Partida parada";
+  document.getElementById("startBtn").textContent=state.running?"⏸ Pausar":"▶ Iniciar";
+  const rem=Math.max(0,(state.interval*60)-(elapsed-state.lastSwap));
+  document.getElementById("nextSwap").textContent=fmt(rem);
+  document.getElementById("nextBox").innerHTML=state.prepared.length===11?"🔔 <b>Troca preparada!</b> Confira os próximos 11 abaixo.":"⏳ O sistema prepara a próxima troca automaticamente pelo menor tempo jogado.";
+  renderPlayers();renderNames();renderHistory();renderTeams();renderStats();
+  if(state.prepared.length===11){document.getElementById("swapPanel").style.display="block";document.getElementById("swapText").innerHTML="<b>Próximos 11:</b><br>"+state.prepared.map(id=>esc(state.players[id].name)).join(", ")}
+  else document.getElementById("swapPanel").style.display="none";
+}
+function updateClock(){
+  render();
+  const elapsed=getElapsed();
+  if(state.running && elapsed>=state.duration*60){finishMatch();return}
+  if(state.running && elapsed-state.lastSwap>=state.interval*60 && state.players.filter(p=>p.field).length===11 && state.prepared.length!==11){
+    prepareSwap(false);toast("🔔 Hora da troca! Os próximos 11 foram preparados.");
+  }
+}
+function startTick(){stopTick();tick=setInterval(()=>{updateClock();save()},1000)}
+function stopTick(){if(tick){clearInterval(tick);tick=null}}
+function toggleMatch(){
+  pushUndo();
+  if(state.running){
+    freezeFieldTimes();freezeClock();state.running=false;addHistory("Partida pausada");
+    stopTick();save();render();toast("⏸ Partida pausada");
+  }else{
+    state.running=true;state.runStartedAt=Date.now();const now=Date.now();state.players.forEach(p=>{if(p.field)p.lastIn=now});
+    addHistory("Partida iniciada");save();render();startTick();toast("▶ Partida iniciada");
+  }
+}
+function finishMatch(){
+  if(!state.running && getElapsed()===0){toast("A partida ainda não começou.");return}
+  pushUndo();freezeFieldTimes();freezeClock();state.running=false;stopTick();
+  addHistory("Partida encerrada — placar "+state.score[0]+" × "+state.score[1]);save();render();toast("🏁 Partida encerrada");
+}
+function resetMatch(){
+  pushUndo();stopTick();state.running=false;state.runStartedAt=null;state.elapsed=0;state.lastSwap=0;state.score=[0,0];state.prepared=[];state.history=[];state.goals=[];
+  state.players.forEach(p=>{p.field=false;p.total=0;p.entered=0;p.left=0;p.lastIn=null;p.goals=0;p.assists=0});
+  state.teams=null;save();render();toast("Partida reiniciada.");
+}
+function newGame(){if(!confirm("Começar uma nova partida e zerar placar, gols, assistências, tempos e rodízio?"))return;resetMatch()}
+function saveSettings(){state.duration=Math.max(1,+document.getElementById("duration").value||60);state.interval=Math.max(1,+document.getElementById("interval").value||15);save();render()}
+function putBest11(){
+  if(state.players.filter(p=>p.field).length===11){toast("Já existem 11 em campo.");return}
+  pushUndo();state.players.forEach(p=>p.field=false);
+  const chosen=state.players.slice().sort((a,b)=>effectiveTotal(a)-effectiveTotal(b)).slice(0,11);
+  const now=Date.now();chosen.forEach(p=>{p.field=true;p.entered++;p.lastIn=state.running?now:null});
+  addHistory("11 jogadores colocados em campo");state.lastSwap=getElapsed();state.prepared=[];save();render();toast("⚽ 11 jogadores em campo.");
+}
+function prepareSwap(show=true){
+  const field=state.players.filter(p=>p.field), out=state.players.filter(p=>!p.field);
+  if(field.length!==11){toast("Primeiro coloque 11 em campo.");return}
+  if(out.length<11){toast("Não há 11 jogadores fora.");return}
+  const incoming=out.slice().sort((a,b)=>effectiveTotal(a)-effectiveTotal(b)).slice(0,11);
+  state.prepared=incoming.map(p=>p.id);save();render();
+  if(show)toast("⚖️ Próxima troca calculada pelo menor tempo.");
+}
+function applyPreparedSwap(){
+  if(state.prepared.length!==11){prepareSwap(false);if(state.prepared.length!==11)return}
+  pushUndo();freezeFieldTimes();const now=Date.now();const incoming=new Set(state.prepared);
+  state.players.forEach(p=>{if(p.field){p.field=false;p.left++}if(incoming.has(p.id)){p.field=true;p.entered++;p.lastIn=state.running?now:null}});
+  state.lastSwap=getElapsed();addHistory("Rodízio: "+state.players.filter(p=>p.field).map(p=>p.name).join(", "));
+  state.prepared=[];save();render();toast("🔄 Troca aplicada!");
+}
+function manualEnter(id){
+  const p=state.players[id];if(p.field)return;
+  if(state.players.filter(x=>x.field).length>=11){toast("Já há 11 em campo. Faça uma troca primeiro.");return}
+  pushUndo();p.field=true;p.entered++;p.lastIn=state.running?Date.now():null;addHistory(p.name+" entrou");save();render();
+}
+function manualLeave(id){
+  const p=state.players[id];if(!p.field)return;
+  pushUndo();freezeFieldTimes();p.field=false;p.left++;p.lastIn=null;addHistory(p.name+" saiu");save();render();
+}
+function changeScore(team,delta){
+  if(delta<0){if(state.score[team]===0)return;pushUndo();state.score[team]--;addHistory("Gol desfeito do Time "+(team===0?"A":"B"));save();render();return}
+  openGoal(team);
+}
+function openGoal(team){
+  pendingTeam=team;document.getElementById("goalTitle").textContent="⚽ Registrar gol — Time "+(team===0?"A":"B");
+  const scorer=document.getElementById("goalScorer"),assist=document.getElementById("goalAssist");
+  scorer.innerHTML=state.players.map((p,i)=>`<option value="${i}">${esc(p.name)}</option>`).join("");
+  assist.innerHTML='<option value="">Sem assistência</option>'+state.players.map((p,i)=>`<option value="${i}">${esc(p.name)}</option>`).join("");
+  assist.value="";document.getElementById("goalModal").classList.add("show");
+}
+function closeGoal(){document.getElementById("goalModal").classList.remove("show");pendingTeam=null}
+function saveGoal(){
+  if(pendingTeam===null)return;
+  const scorer=+document.getElementById("goalScorer").value;const aVal=document.getElementById("goalAssist").value;
+  const assist=aVal===""?null:+aVal;if(assist===scorer){toast("O artilheiro e o assistente não podem ser o mesmo jogador.");return}
+  pushUndo();state.score[pendingTeam]++;state.players[scorer].goals++;
+  if(assist!==null)state.players[assist].assists++;
+  const g={time:fmt(getElapsed()),team:pendingTeam,scorer,assist};state.goals.unshift(g);
+  addHistory("⚽ Gol Time "+(pendingTeam===0?"A":"B")+" — "+state.players[scorer].name+(assist!==null?" (assistência: "+state.players[assist].name+")":""));
+  closeGoal();save();render();toast("⚽ Gol registrado!");
+}
+function renderStats(){
+  const goals=state.players.reduce((s,p)=>s+p.goals,0), assists=state.players.reduce((s,p)=>s+p.assists,0);
+  document.getElementById("totalGoals").textContent=goals;document.getElementById("totalAssists").textContent=assists;document.getElementById("totalContrib").textContent=goals+assists;
+  const top=(key)=>state.players.filter(p=>p[key]>0).sort((a,b)=>b[key]-a[key]||a.name.localeCompare(b.name)).slice(0,8);
+  const rows=(arr,key)=>arr.length?arr.map((p,i)=>`<div class="rankrow"><span>${i===0?"🥇 ":""}${esc(p.name)}</span><b>${p[key]}</b></div>`).join(""):'<div class="empty">Ainda sem registros.</div>';
+  document.getElementById("scorers").innerHTML=rows(top("goals"),"goals");document.getElementById("assisters").innerHTML=rows(top("assists"),"assists");
+  const contrib=state.players.map(p=>({p,v:p.goals+p.assists})).filter(x=>x.v>0).sort((a,b)=>b.v-a.v||a.p.name.localeCompare(b.p.name)).slice(0,8);
+  document.getElementById("contributors").innerHTML=contrib.length?contrib.map((x,i)=>`<div class="rankrow"><span>${i===0?"⭐ ":""}${esc(x.p.name)}</span><b>${x.v}</b></div>`).join(""):'<div class="empty">Ainda sem participações.</div>';
+  document.getElementById("goalHistory").innerHTML=state.goals.length?state.goals.map(g=>`<div class="logitem">⏱ ${g.time} · Time ${g.team===0?"A":"B"} · ⚽ ${esc(state.players[g.scorer]?.name||"Jogador")} ${g.assist!==null&&g.assist!==undefined?"· 🎯 "+esc(state.players[g.assist]?.name||""):""}</div>`).join(""):'<div class="empty">Nenhum gol registrado.</div>';
+}
+function drawTeams(){
+  pushUndo();const arr=state.players.map(p=>p.name).sort(()=>Math.random()-.5);state.teams=[arr.slice(0,11),arr.slice(11,22)];save();render();toast("🎲 Times sorteados!");
+}
+function clearTeams(){state.teams=null;save();render()}
+function renderPlayers(){
+  const box=document.getElementById("players");box.innerHTML="";
+  state.players.forEach((p,i)=>{const total=Math.floor(effectiveTotal(p));const d=document.createElement("div");d.className="player "+(p.field?"field":"");
+    d.innerHTML=`<div class="phead"><div class="pname">${i+1}. ${esc(p.name)}</div><div class="badge ${p.field?"in":""}">${p.field?"🟢 EM CAMPO":"⚪ FORA"}</div></div>
+    <div class="pmeta">Entrou: ${p.entered} · Saiu: ${p.left} · Tempo: <b>${fmt(total)}</b> · ⚽ ${p.goals} · 🎯 ${p.assists}</div>
+    <div class="playerBtns"><button class="green mini" onclick="manualEnter(${i})">+ ENTROU</button><button class="red mini" onclick="manualLeave(${i})">+ SAIU</button></div>`;
+    box.appendChild(d);
+  });
+}
+function renderNames(){
+  const box=document.getElementById("names");box.innerHTML="";
+  state.names.forEach((n,i)=>{const row=document.createElement("div");row.className="nameRow";row.innerHTML=`<input id="n${i}" type="text" value="${attr(n)}" aria-label="Jogador ${i+1}">`;box.appendChild(row)});
+}
+function saveNames(){
+  pushUndo();state.names=state.names.map((_,i)=>document.getElementById("n"+i).value.trim()||("Jogador "+(i+1)));state.players.forEach((p,i)=>p.name=state.names[i]);save();render();toast("💾 Nomes salvos!");
+}
+function resetNames(){pushUndo();state.names=[...DEFAULT_NAMES];state.players.forEach((p,i)=>p.name=state.names[i]);save();render();toast("Nomes padrão restaurados.")}
+function renderHistory(){const b=document.getElementById("history");b.innerHTML=state.history.length?state.history.map(x=>`<div class="logitem">${esc(x)}</div>`).join(""):'<div class="empty">Nenhum registro ainda.</div>'}
+function undo(){if(!state.undo||!state.undo.length){toast("Nada para desfazer.");return}const raw=state.undo.pop();restoreSnap(raw);toast("↩ Última ação desfeita.")}
+function renderTeams(){const b=document.getElementById("teams");if(!state.teams){b.innerHTML='<div class="empty" style="grid-column:1/-1">Ainda não há times sorteados.</div>';return}b.innerHTML=state.teams.map((t,i)=>`<div class="team"><h3>🔵 Time ${i===0?"A":"B"}</h3><ol>${t.map(n=>`<li>${esc(n)}</li>`).join("")}</ol></div>`).join("")}
+function esc(s){return String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))}
+function attr(s){return esc(s)}
+if("serviceWorker" in navigator){window.addEventListener("load",()=>navigator.serviceWorker.register("sw.js").catch(()=>{}))}
+load();
+</script>
+</body>
+</html>
